@@ -38,6 +38,19 @@
 
     <div id="video-container" style="display: none;">
         <iframe id="youtube-iframe" width="640" height="360" frameborder="0" allowfullscreen></iframe>
+
+        <div>
+            <p>Video Link Tools:</p>
+            <button onclick="copyLink()">Copy Link</button>
+            <button onclick="openLink()">Open Link in New Tab</button>
+        </div>
+    
+        <div>
+            <p>HTML Embed Code:</p>
+            <button onclick="generateEmbedCode()">Generate Embed Code</button>
+            <button onclick="copyEmbedCode()">Copy Embed Code</button>
+            <textarea id="embed-code" rows="4" cols="50"></textarea>
+        </div>
     </div>
 
     <p>All videos played belongs to its copyright holder.</p>
@@ -45,6 +58,9 @@
     <p>Source Code is available on <a href="https://github.com/LeeHansHinLun/leehanshinlun.github.io/blob/main/youtube-embed-viewer/index.html">GitHub</a></p>
 
     <script>
+        var youtubeVideoId = null;
+        var embedCode = null;
+
         function extractVideoId(input) {
             // Check if the input is already a valid video ID
             if (/^[A-Za-z0-9_-]{11}$/.test(input)) {
@@ -68,8 +84,56 @@
                 const iframeElement = document.getElementById("youtube-iframe");
                 iframeElement.src = `https://www.youtube.com/embed/${videoId}`;
                 document.getElementById("video-container").style.display = "block";
+
+                youtubeVideoId = videoId
             } else {
                 alert("Invalid YouTube video ID or URL format.");
+            }
+        }
+        
+
+        // Contents after this is property of V2. All Rights Reserved
+        function copyLink() {
+            var videoUrl = `https://youtube.com/embed/${youtubeVideoId}`;
+            navigator.clipboard.writeText(videoUrl).then(function() {
+                alert('Video link copied to clipboard!');
+            }).catch(function(err) {
+                console.error('Unable to copy video link', err);
+            });
+        }
+
+        function openLink() {
+            var videoUrl = `https://youtube.com/embed/${youtubeVideoId}`;
+            window.open(videoUrl, '_blank');
+        }
+
+        function generateEmbedCode() {
+            var videoUrl = `https://youtube.com/embed/${youtubeVideoId}`;
+            
+            if (youtubeVideoId) {
+                embedCode = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + youtubeVideoId + '" frameborder="0" allowfullscreen></iframe>';
+                document.getElementById('embed-code').value = embedCode;
+            } else {
+                alert('Invalid YouTube video URL');
+            }
+        }
+
+        function copyEmbedCode() {
+            if (embedCode) {
+                navigator.clipboard.writeText(embedCode).then(function() {
+                    alert('Embed code copied to clipboard!');
+                }).catch(function(err) {
+                    console.error('Unable to copy embed code', err);
+                });
+            } else {
+                generateEmbedCode()
+                if (!embedCode) {
+                    alert('Unable to copy embed code')
+                    return
+                } else {
+                    copyEmbedCode()
+                }
+                
             }
         }
     </script>
